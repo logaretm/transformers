@@ -1,0 +1,21 @@
+{
+    "name": "logar/transformers",
+    "description": "Simple laravel eloquent models transformers.",
+    "license": "MIT",
+    "keywords": ["laravel", "transformers"],
+    "authors": [
+        {
+            "name": "Abdelrahman Awad",
+            "email": "logaretm1@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "illuminate/support": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Logaretm\\Transformers\\": "src/"
+        }
+    }
+}
