@@ -2,6 +2,7 @@
 
 namespace Logaretm\Transformers;
 
+use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Transformer;
 
@@ -15,7 +16,7 @@ trait TransformerTrait
             throw new TransformerException('Transformer definition not found. Check transformer property if it exists');
         }
 
-        $transformer = app($this->transformer);
+        $transformer = new $this->transformer;
 
         // If not a transformer instance.
         if(! $transformer instanceof Transformer)
