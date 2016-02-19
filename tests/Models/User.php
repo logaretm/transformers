@@ -20,6 +20,17 @@ class UserTransformer extends Transformer
             'memberSince' => $user->created_at->timestamp
         ];
     }
+
+    // Custom/Alternate transformation.
+    public function adminTransformation($user)
+    {
+        return [
+            'name' => $user->name,
+            'email' => $user->email,
+            'memberSince' => $user->created_at->timestamp,
+            'isAdmin' => $user->id === 1
+        ];
+    }
 }
 
 class User extends Model implements Transformable

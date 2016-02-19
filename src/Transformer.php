@@ -6,10 +6,15 @@ use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Contracts\Transformable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Providers\TransformerServiceProvider;
 
 abstract class Transformer
 {
+    /**
+     * @var string
+     */
+    protected $transformationMethod = null;
 
     /**
      * The relations to be added to the transformation.
@@ -41,7 +46,23 @@ abstract class Transformer
             return $this->transformWithRelated($object);
         }
 
+        if($this->transformationMethod)
+        {
+            return $this->getAlternateTransformation($object);
+        }
+
         return $this->getTransformation($object);
+    }
+
+    /**
+     * Calls the selected alternate transformation method.
+     *
+     * @param $item
+     * @return mixed
+     */
+    public function getAlternateTransformation($item)
+    {
+        return $this->{"{$this->transformationMethod}"}($item);
     }
 
     /**
@@ -51,6 +72,8 @@ abstract class Transformer
     public abstract function getTransformation($item);
 
     /**
+     * Transforms the item with its related models.
+     *
      * @param $item
      * @return array
      */
@@ -90,6 +113,28 @@ abstract class Transformer
     }
 
     /**
+     * Sets the current transformation.
+     *
+     * @param $transformationName
+     * @throws TransformerException
+     */
+    public function setTransformation($transformationName)
+    {
+        // just to avoid wrongly passing the name suffixed with "Transformation".
+        $transformationName = str_replace('Transformation', '', $transformationName);
+        $methodName = $transformationName . "Transformation";
+
+        if(! method_exists($this, $methodName))
+        {
+            throw new TransformerException("No such transformation as $methodName defined.");
+        }
+
+        $this->transformationMethod = $methodName;
+    }
+
+    /**
+     * Transforms a collection.
+     *
      * @param $collection
      * @return array
      */
@@ -105,6 +150,8 @@ abstract class Transformer
     }
 
     /**
+     * Transforms the related item, and adds it to the transformation array.
+     *
      * @param $itemTransformation
      * @param $item
      * @return array
@@ -121,6 +168,8 @@ abstract class Transformer
     }
 
     /**
+     * Resolves the transformation for the related model.
+     *
      * @param $item
      * @param $relation
      * @return mixed
@@ -135,7 +184,6 @@ abstract class Transformer
         $result = $item->{$relation};
         $related = $result;
 
-
         $transformer = null;
 
         // if its a collection get the transformer object of the first item.
@@ -144,13 +192,13 @@ abstract class Transformer
             $result = $result[0];
         }
 
-        // if its a transformable model get its transformer.
-        // otherwise cast it to an array.
-
+        // if its a transformable model resolve its transformer.
         if($result instanceof Transformable)
         {
             $transformer = $result->getTransformer();
         }
+
+        // otherwise cast it to an array.
 
         else
         {
@@ -168,38 +216,59 @@ abstract class Transformer
     }
 
     /**
-     * Resets the transformer relations.
+     * Resets the transformer relations and the selected transformation method.
      *
      * @return $this
      */
     public function reset()
     {
         $this->related = [];
+        $this->transformationMethod = null;
 
         return $this;
     }
 
     /**
+     * Makes (resolves) a transformer for the given model class name.
+     *
      * @param $modelName
+     * @return App
      */
     public static function make($modelName)
     {
+        if(! static::checkConfig())
+        {
+            return null;
+        }
+
         $transformerName = config('transformers.transformers')[$modelName];
 
         return app($transformerName);
     }
 
     /**
+     * Checks if the a transformer for specific model can be generated.
+     *
      * @param $modelName
      * @return bool
      */
     public static function canMake($modelName)
     {
-        if(! config()->has('transformers.transformers'))
+        if(! static::checkConfig())
         {
             return false;
         }
 
         return array_has(config('transformers.transformers'), $modelName);
+    }
+
+    /**
+     * Checks if the app has the transformers package configuration.
+     *
+     * @return mixed
+     */
+    protected static function checkConfig()
+    {
+        return config()->has('transformers.transformers');
     }
 }

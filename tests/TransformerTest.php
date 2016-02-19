@@ -1,7 +1,7 @@
 <?php
 
 
-use Illuminate\Database\Eloquent\Model;
+use Logaretm\Transformers\Exceptions\TransformerException;
 
 class TransformerTest extends TestCase
 {
@@ -64,5 +64,27 @@ class TransformerTest extends TestCase
 
         $this->assertCount(3, $transformedData['posts']);
         $this->assertCount(4, $transformedData['posts'][0]['tags']);
+    }
+
+    /** @test */
+    function it_throws_an_exception_if_a_requested_transformation_does_not_exist()
+    {
+        $this->makeUsers(1, true);
+        $transformer = new UserTransformer();
+
+        $this->expectException(TransformerException::class);
+        $transformer->setTransformation('public');
+    }
+
+    /** @test */
+    function it_uses_multiple_transformations()
+    {
+        $user = $this->makeUsers(1, true);
+        $transformer = new UserTransformer();
+
+        $this->assertArrayNotHasKey('isAdmin', $transformer->transform($user));
+        $transformer->setTransformation('admin');
+
+        $this->assertArrayHasKey('isAdmin', $transformer->transform($user));
     }
 }
