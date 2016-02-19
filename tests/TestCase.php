@@ -61,12 +61,20 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
             $table->unsignedInteger('tag_id')->index();
             $table->unsignedInteger('post_id')->index();
         });
+
+        DB::schema()->create('categories', function (Blueprint $table)
+        {
+            $table->increments('id');
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
      * @param int $count
      * @param bool $save
-     * @return array
+     * @return array|User
      */
     protected function makeUsers($count = 1, $save = false)
     {
@@ -152,116 +160,5 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         }
 
         return $user;
-    }
-}
-
-
-class UserTransformer extends Transformer
-{
-    /**
-     * @param $user
-     * @return mixed
-     */
-    public function getTransformation($user)
-    {
-        return [
-            'name' => $user->name,
-            'email' => $user->email,
-            'memberSince' => $user->created_at->timestamp
-        ];
-    }
-}
-
-class PostTransformer extends Transformer
-{
-
-    /**
-     * @param $post
-     * @return mixed
-     */
-    public function getTransformation($post)
-    {
-        return [
-            'title' => $post->title,
-            'body' => $post->body,
-            'created' => $post->created_at->timestamp
-        ];
-    }
-}
-
-class TagTransformer extends Transformer
-{
-
-    /**
-     * @param $tag
-     * @return mixed
-     */
-    public function getTransformation($tag)
-    {
-        return [
-            'name' => $tag->name
-        ];
-    }
-}
-
-class Tag extends Model implements Transformable
-{
-    use TransformerTrait;
-
-    /**
-     * @var
-     */
-    protected $transformer = TagTransformer::class;
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function post()
-    {
-        return $this->belongsToMany(Post::class);
-    }
-}
-
-class Post extends Model implements Transformable
-{
-    use TransformerTrait;
-
-    /**
-     * @var
-     */
-    protected $transformer = PostTransformer::class;
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function author()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class);
-    }
-}
-
-class User extends Model implements Transformable
-{
-    use TransformerTrait;
-
-    /**
-     * @var
-     */
-    protected $transformer = UserTransformer::class;
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function posts()
-    {
-        return $this->hasMany(Post::class);
     }
 }

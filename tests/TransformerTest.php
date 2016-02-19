@@ -1,6 +1,8 @@
 <?php
 
 
+use Illuminate\Database\Eloquent\Model;
+
 class TransformerTest extends TestCase
 {
     /** @test */
@@ -47,8 +49,6 @@ class TransformerTest extends TestCase
 
         $transformedData = $transformer->with('posts')->transform($user);
 
-        var_dump($transformedData['posts']);
-
         $this->assertCount(3, $transformedData['posts']);
     }
 
@@ -61,8 +61,6 @@ class TransformerTest extends TestCase
         $transformer = new UserTransformer();
 
         $transformedData = $transformer->with('posts.tags')->transform($user);
-
-        var_dump($transformedData['posts'][0]);
 
         $this->assertCount(3, $transformedData['posts']);
         $this->assertCount(4, $transformedData['posts'][0]['tags']);
