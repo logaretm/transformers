@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Transformer;
 
-trait TransformerTrait
+trait TransformableTrait
 {
     public function getTransformer()
     {

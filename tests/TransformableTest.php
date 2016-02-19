@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Logaretm\Transformers\Contracts\Transformable;
 use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Transformer;
-use Logaretm\Transformers\TransformerTrait;
+use Logaretm\Transformers\TransformableTrait;
 
 class TransformableTest extends TestCase
 {
@@ -44,12 +44,12 @@ class TransformableTest extends TestCase
 
 class BadModel extends Model implements Transformable
 {
-    use TransformerTrait;
+    use TransformableTrait;
 }
 
 class WorseModel extends Model implements Transformable
 {
-    use TransformerTrait;
+    use TransformableTrait;
 
     protected $transformer = User::class;
 }

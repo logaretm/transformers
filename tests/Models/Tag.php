@@ -3,7 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Logaretm\Transformers\Contracts\Transformable;
 use Logaretm\Transformers\Transformer;
-use Logaretm\Transformers\TransformerTrait;
+use Logaretm\Transformers\TransformableTrait;
 
 class TagTransformer extends Transformer
 {
@@ -22,7 +22,7 @@ class TagTransformer extends Transformer
 
 class Tag extends Model implements Transformable
 {
-    use TransformerTrait;
+    use TransformableTrait;
 
     /**
      * @var
