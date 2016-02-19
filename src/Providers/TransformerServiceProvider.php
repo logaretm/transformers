@@ -7,34 +7,15 @@ use Illuminate\Support\ServiceProvider;
 class TransformerServiceProvider extends ServiceProvider
 {
     /**
-     * @var bool
-     */
-    public $defer = true;
-
-    /**
-     * @var array
-     */
-    protected static $transformers = [
-        // Define Model => Transformer pairs here.
-        // \App\User::class => \App\Transformers\UserTransformer::class
-    ];
-
-    /**
-     * @return array
-     */
-    public static function getTransformers()
-    {
-        return self::$transformers;
-    }
-
-    /**
      * Bootstrap the application services.
      *
      * @return void
      */
     public function boot()
     {
-
+        $this->publishes([
+            __DIR__.'/../config/transformers.php' => config_path('transformers.php')
+        ], 'config');
     }
 
     /**
@@ -52,7 +33,7 @@ class TransformerServiceProvider extends ServiceProvider
      */
     protected function registerTransformers()
     {
-        foreach (static::$transformers as $transformerClass)
+        foreach (config('transformers.transformers') as $transformerClass)
         {
             $this->app->singleton($transformerClass, new $transformerClass());
         }
@@ -65,6 +46,6 @@ class TransformerServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array_values(static::$transformers);
+        return array_values(config('transformers.transformers'));
     }
 }

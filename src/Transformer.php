@@ -182,7 +182,7 @@ abstract class Transformer
      */
     public static function make($modelName)
     {
-        $transformerName = TransformerServiceProvider::getTransformers()[$modelName];
+        $transformerName = config('transformers.transformers')[$modelName];
 
         return App::make($transformerName);
     }
@@ -193,6 +193,6 @@ abstract class Transformer
      */
     public static function canMake($modelName)
     {
-        return array_has($transformerName = TransformerServiceProvider::getTransformers(), $modelName);
+        return array_has(config('transformers.transformers'), $modelName);
     }
 }
