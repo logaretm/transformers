@@ -10,13 +10,23 @@ trait TransformableTrait
 {
     public function getTransformer()
     {
+        $modelName = get_class($this);
+
         // If doesn't exist.
-        if(! property_exists($this, 'transformer'))
+        if(property_exists($this, 'transformer'))
+        {
+            $transformer = new $this->transformer;
+        }
+
+        elseif(Transformer::canMake($modelName))
+        {
+            $transformer = Transformer::make($modelName);
+        }
+
+        else
         {
             throw new TransformerException('Transformer definition not found. Check transformer property if it exists');
         }
-
-        $transformer = new $this->transformer;
 
         // If not a transformer instance.
         if(! $transformer instanceof Transformer)

@@ -2,9 +2,11 @@
 
 namespace Logaretm\Transformers;
 
+use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Contracts\Transformable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Logaretm\Transformers\Providers\TransformerServiceProvider;
 
 abstract class Transformer
 {
@@ -161,5 +163,36 @@ abstract class Transformer
         }
 
         return $transformer->transform($related);
+    }
+
+    /**
+     * Resets the transformer relations.
+     *
+     * @return $this
+     */
+    public function reset()
+    {
+        $this->related = [];
+
+        return $this;
+    }
+
+    /**
+     * @param $modelName
+     */
+    public static function make($modelName)
+    {
+        $transformerName = TransformerServiceProvider::getTransformers()[$modelName];
+
+        return App::make($transformerName);
+    }
+
+    /**
+     * @param $modelName
+     * @return bool
+     */
+    public static function canMake($modelName)
+    {
+        return array_has($transformerName = TransformerServiceProvider::getTransformers(), $modelName);
     }
 }
