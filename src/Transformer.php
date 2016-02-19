@@ -69,6 +69,8 @@ abstract class Transformer
      */
     public function with($relation)
     {
+        $this->reset();
+
         if(func_num_args() > 1)
         {
             return $this->with(func_get_args());
@@ -184,7 +186,7 @@ abstract class Transformer
     {
         $transformerName = config('transformers.transformers')[$modelName];
 
-        return App::make($transformerName);
+        return app($transformerName);
     }
 
     /**
@@ -193,6 +195,11 @@ abstract class Transformer
      */
     public static function canMake($modelName)
     {
+        if(! config()->has('transformers.transformers'))
+        {
+            return false;
+        }
+
         return array_has(config('transformers.transformers'), $modelName);
     }
 }

@@ -15,7 +15,7 @@ class TransformerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/transformers.php' => config_path('transformers.php')
+            __DIR__.'/../Config/transformers.php' => config_path('transformers.php')
         ], 'config');
     }
 
@@ -34,9 +34,17 @@ class TransformerServiceProvider extends ServiceProvider
      */
     protected function registerTransformers()
     {
-        foreach (Config::get('transformers.transformers') as $transformerClass)
+        if(! config()->has('transformers.transformers'))
         {
-            $this->app->singleton($transformerClass, new $transformerClass());
+            return;
+        }
+
+        foreach (config('transformers.transformers') as $class => $transformerClass)
+        {
+            $this->app->singleton($transformerClass, function () use($transformerClass)
+            {
+                return new $transformerClass();
+            });
         }
     }
 
@@ -47,6 +55,11 @@ class TransformerServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array_values(Config::get('transformers.transformers'));
+        if(! config()->has('transformers.transformers'))
+        {
+            return [];
+        }
+
+        return array_values(config('transformers.transformers'));
     }
 }
