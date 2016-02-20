@@ -98,12 +98,12 @@ You may find retrieving the transformer over and over isn't intuitive, you can u
     ]
 ```
 
-* Now you don't need to provide the `$transformer` property anymore on your model.
+* Now you don't need to provide the `$transformer` property anymore on your model. note that the transformer resolution for the related model will prioritize the registered transformers.
 
 Furthermore you can now use the static methods `Transformer::make` and `Transformer::canMake` to instantiate transformers for the models.
 
 ```php
-$transformer = Transformer::make(User::class);
+$transformer = Transformer::make(User::class); // creates a transformer for the model.
 ```
 #### Relations
 
@@ -128,10 +128,10 @@ you can also transform nested relations with the same syntax.
 ```php
 $transformer = new UserTransformer();
 $users = User::with('posts.tags')->get();
-$data = $transformer->with('posts')->transform($users);
+$data = $transformer->with('posts.tags')->transform($users);
 ```
 
-you can reset the transformer using `$transformer->reset()` which will remove the related models from the transformation.
+you can reset the transformer using `$transformer->reset()` which will remove the related models from the transformation. also note that any call to `with` will reset the transformer automatically.
 
 aside from collections you can transform a paginator, or a single object.
 
@@ -144,6 +144,59 @@ $transformer->transform($paginator); // returns an array(15).
 
 $user = User::first();
 $transformedUser =  $transformer->transform($user); // returns a single array.
+```
+
+#### Alternate Transformations
+
+You don't have to use only one transformation per transformer, for example you may need specific transformations for specific scenarios for the same model.
+
+using the method `setTransformation` you can override the transformation method to use another one you have defined on the transformer.
+
+ ```php
+ class UserTransformer extends Transformer
+ {
+     /**
+      * @param $user
+      * @return mixed
+      */
+     public function getTransformation($user)
+     {
+         return [
+             'name' => $user->name,
+             'email' => $user->email,
+             'memberSince' => $user->created_at->timestamp
+         ];
+     }
+
+     // Custom/Alternate transformation.
+     public function adminTransformation($user)
+     {
+         return [
+             'name' => $user->name,
+             'email' => $user->email,
+             'memberSince' => $user->created_at->timestamp,
+             'isAdmin' => $user->isAdmin()
+         ];
+     }
+ }
+ ```
+
+To use the alternate transformation:
+
+```php
+$transformer->setTransformation('admin');
+```
+
+Note that the naming convention for the transformation method is `"{transformation_name}Transformation"`.
+
+any subsequent calls to `transform` method will use that transformation instead.
+
+Note that it will throw a TransformerException if the requested transformation does not exist.
+
+to reset the transformation method use the `reset` method.
+
+```php
+$transformer->reset(); //resets the transformation method and the related models.
 ```
 
 ## Testing
