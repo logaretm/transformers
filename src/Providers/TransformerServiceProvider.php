@@ -9,6 +9,11 @@ use Logaretm\Transformers\Transformer;
 class TransformerServiceProvider extends ServiceProvider
 {
     /**
+     * @var bool
+     */
+    public $defer = true;
+
+    /**
      * Bootstrap the application services.
      *
      * @return void
@@ -38,7 +43,7 @@ class TransformerServiceProvider extends ServiceProvider
      */
     protected function registerTransformers()
     {
-        foreach (config('transformers.transformers') as $class => $transformerClass)
+        foreach (Config::get('transformers.transformers') as $class => $transformerClass)
         {
             $this->app->singleton($transformerClass, function () use($transformerClass)
             {
@@ -54,6 +59,6 @@ class TransformerServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return Transformer::isConfigPublished() ? array_values(config('transformers.transformers')) : [];
+        return Transformer::isConfigPublished() ? array_values(Config::get('transformers.transformers')) : [];
     }
 }
