@@ -198,6 +198,12 @@ abstract class Transformer
             $transformer = $result->getTransformer();
         }
 
+        // if its registered by the service provider.
+        elseif(static::canMake($result))
+        {
+            $transformer = static::make(get_class($result));
+        }
+
         // otherwise cast it to an array.
 
         else
