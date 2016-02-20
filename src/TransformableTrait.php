@@ -4,7 +4,6 @@ namespace Logaretm\Transformers;
 
 use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Exceptions\TransformerException;
-use Logaretm\Transformers\Transformer;
 
 trait TransformableTrait
 {
@@ -13,9 +12,9 @@ trait TransformableTrait
         $modelName = get_class($this);
 
         // If doesn't exist.
-        if(property_exists($this, 'transformer'))
+        if(property_exists($this, 'transformer') && $this->transformer)
         {
-            $transformer = new $this->transformer;
+            $transformer = App::make($this->transformer);
         }
 
         elseif(Transformer::canMake($modelName))
@@ -25,7 +24,7 @@ trait TransformableTrait
 
         else
         {
-            throw new TransformerException('Transformer definition not found. Check transformer property if it exists');
+            throw new TransformerException('Transformer definition not found. Check transformer property if it exists or use the config file.');
         }
 
         // If not a transformer instance.

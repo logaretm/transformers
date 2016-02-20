@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
-use Logaretm\Transformers\Contracts\Transformable;
-use Logaretm\Transformers\Transformer;
-use Logaretm\Transformers\TransformerTrait;
 use Illuminate\Database\Capsule\Manager as DB;
+use Logaretm\Transformers\Tests\Models\Post;
+use Logaretm\Transformers\Tests\Models\Tag;
+use Logaretm\Transformers\Tests\Models\User;
 
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
@@ -83,7 +82,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 
         for($i = 0; $i < $count; $i++)
         {
-            $user = new User();
+            $user = new User;
             $user->name = $faker->name;
             $user->email = $faker->email;
 

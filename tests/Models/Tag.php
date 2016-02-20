@@ -1,5 +1,7 @@
 <?php
 
+namespace Logaretm\Transformers\Tests\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Logaretm\Transformers\Contracts\Transformable;
 use Logaretm\Transformers\Transformer;

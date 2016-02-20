@@ -1,5 +1,7 @@
 <?php
 
+namespace Logaretm\Transformers\Tests\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Logaretm\Transformers\Contracts\Transformable;
 use Logaretm\Transformers\Transformer;
@@ -48,5 +50,13 @@ class User extends Model implements Transformable
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Removes the property from the user object, for testing purposes.
+     */
+    public function unsetTransformerProperty()
+    {
+       unset($this->transformer);
     }
 }

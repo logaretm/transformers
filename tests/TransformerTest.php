@@ -1,10 +1,15 @@
 <?php
 
-
+use Illuminate\Support\Facades\App;
 use Logaretm\Transformers\Exceptions\TransformerException;
+use Logaretm\Transformers\Tests\Models\PostTransformer;
+use Logaretm\Transformers\Tests\Models\TagTransformer;
+use Logaretm\Transformers\Tests\Models\User;
+use Logaretm\Transformers\Tests\Models\UserTransformer;
 
 class TransformerTest extends TestCase
 {
+
     /** @test */
     function it_transforms_a_single_model_instance()
     {
@@ -43,9 +48,13 @@ class TransformerTest extends TestCase
     function it_transforms_related_models()
     {
         $this->makeUserWithPosts();
-
         $user = User::first();
         $transformer = new UserTransformer();
+
+        App::shouldReceive('make')
+            ->once()
+            ->with(PostTransformer::class)
+            ->andReturn(new PostTransformer);
 
         $transformedData = $transformer->with('posts')->transform($user);
 
@@ -59,6 +68,16 @@ class TransformerTest extends TestCase
 
         $user = User::first();
         $transformer = new UserTransformer();
+
+        App::shouldReceive('make')
+            ->once()
+            ->with(PostTransformer::class)
+            ->andReturn(new PostTransformer());
+
+        App::shouldReceive('make')
+            ->once()
+            ->with(TagTransformer::class)
+            ->andReturn(new TagTransformer());
 
         $transformedData = $transformer->with('posts.tags')->transform($user);
 

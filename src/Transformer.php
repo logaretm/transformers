@@ -2,12 +2,12 @@
 
 namespace Logaretm\Transformers;
 
-use Illuminate\Support\Facades\App;
-use Logaretm\Transformers\Contracts\Transformable;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
+use Logaretm\Transformers\Contracts\Transformable;
 use Illuminate\Database\Eloquent\Collection;
 use Logaretm\Transformers\Exceptions\TransformerException;
-use Logaretm\Transformers\Providers\TransformerServiceProvider;
 
 abstract class Transformer
 {
@@ -241,9 +241,9 @@ abstract class Transformer
             return null;
         }
 
-        $transformerName = config('transformers.transformers')[$modelName];
+        $transformerName = Config::get('transformers.transformers')[$modelName];
 
-        return app($transformerName);
+        return App::make($transformerName);
     }
 
     /**
@@ -259,7 +259,7 @@ abstract class Transformer
             return false;
         }
 
-        return array_has(config('transformers.transformers'), $modelName);
+        return array_has(Config::get('transformers.transformers'), $modelName);
     }
 
     /**
@@ -269,6 +269,6 @@ abstract class Transformer
      */
     public static function isConfigPublished()
     {
-        return config()->has('transformers.transformers');
+        return Config::has('transformers.transformers');
     }
 }
