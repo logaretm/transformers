@@ -199,7 +199,7 @@ abstract class Transformer
         }
 
         // if its registered by the service provider.
-        elseif(static::canMake($result))
+        elseif(static::canMake(get_class($result)))
         {
             $transformer = static::make(get_class($result));
         }
