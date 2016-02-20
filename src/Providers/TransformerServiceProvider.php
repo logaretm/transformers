@@ -4,6 +4,7 @@ namespace Logaretm\Transformers\Providers;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Logaretm\Transformers\Transformer;
 
 class TransformerServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,10 @@ class TransformerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerTransformers();
+        if(Transformer::isConfigPublished())
+        {
+            $this->registerTransformers();
+        }
     }
 
     /**
@@ -34,11 +38,6 @@ class TransformerServiceProvider extends ServiceProvider
      */
     protected function registerTransformers()
     {
-        if(! config()->has('transformers.transformers'))
-        {
-            return;
-        }
-
         foreach (config('transformers.transformers') as $class => $transformerClass)
         {
             $this->app->singleton($transformerClass, function () use($transformerClass)
@@ -55,11 +54,6 @@ class TransformerServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        if(! config()->has('transformers.transformers'))
-        {
-            return [];
-        }
-
-        return array_values(config('transformers.transformers'));
+        return Transformer::isConfigPublished() ? array_values(config('transformers.transformers')) : [];
     }
 }

@@ -236,7 +236,7 @@ abstract class Transformer
      */
     public static function make($modelName)
     {
-        if(! static::checkConfig())
+        if(! static::isConfigPublished())
         {
             return null;
         }
@@ -254,7 +254,7 @@ abstract class Transformer
      */
     public static function canMake($modelName)
     {
-        if(! static::checkConfig())
+        if(! static::isConfigPublished())
         {
             return false;
         }
@@ -267,7 +267,7 @@ abstract class Transformer
      *
      * @return mixed
      */
-    protected static function checkConfig()
+    public static function isConfigPublished()
     {
         return config()->has('transformers.transformers');
     }

@@ -32,7 +32,7 @@ class TransformableTest extends TestCase
     /** @test */
     function it_throws_an_exception_if_a_model_uses_the_trait_but_defines_an_invalid_transformer_class()
     {
-        $model = new WorseModel;
+        $model = new AnotherBadModel;
 
         // $this->setExpectedException(TransformerException::class);
         $this->expectException(TransformerException::class);
@@ -47,7 +47,7 @@ class BadModel extends Model implements Transformable
     use TransformableTrait;
 }
 
-class WorseModel extends Model implements Transformable
+class AnotherBadModel extends Model implements Transformable
 {
     use TransformableTrait;
 
