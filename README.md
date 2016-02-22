@@ -1,6 +1,6 @@
 # Transformers
 
-This a package that provides transformers classes and traits for the Laravel eloquent models.
+This a package that provides transformer (reducer/serializer) classes and traits for the Laravel eloquent models.
 
 ## Install
 
@@ -9,6 +9,19 @@ Via Composer
 ``` bash
 composer require logaretm/transformers
 ```
+
+##### Transformer:
+A class responsible for transforming or reducing an object from one form to another then consumed.
+
+##### Why would you use them?
+
+Transformers are useful in API responses, where you want the ajax results to be in a specific form, by hiding attributes, exposing additional ones, or convert attribute types.
+
+Also by delegating the responsibility of transforming models to a separate class make it easier to handle and maintain down the line.
+
+##### Inspiration
+
+Having seen[Jeffery Way's Laracasts video](https://laracasts.com/series/incremental-api-development/episodes/4) and reading the book [Building APIs You Won't Hate](https://apisyouwonthate.com/), I wanted to create a simple package specific to laravel apps and because I needed this functionality in almost every project.
 
 ## Usage
 
@@ -51,6 +64,11 @@ class UsersController extends Controller
 }
 ```
 
+You can also instantiate it manually if you don't think DI is your thing.
+```php
+$transformer = new UserTransformer;
+```
+
 #### Dynamic Transformation
 
 You can also use the `TransformableTrait` on your model and define a `$transformer` property to be able to use the `getTransformer()` method.
@@ -82,7 +100,7 @@ which can be helpful if you want to dynamically transform models. but note that 
 
 You may find retrieving the transformer over and over isn't intuitive, you can use the `TransformerServiceProvider` and a config file to define an array mapping each model or any class to a transformer class.
 
-* Add this line to `Config/app.php` in the service providers array.
+* Add this line to `config/app.php` in the service providers array.
 
 `Logaretm\Transformers\Providers\TransformerServiceProvider::class`
 
@@ -98,11 +116,14 @@ You may find retrieving the transformer over and over isn't intuitive, you can u
     ]
 ```
 
-* Now you don't need to provide the `$transformer` property anymore on your model. note that the transformer resolution for the related model will prioritize the registered transformers.
+* Now you don't need to provide the `$transformer` property anymore on your model, nor implement the interface.
 
-Furthermore you can now use the static methods `Transformer::make` and `Transformer::canMake` to instantiate transformers for the models.
+Note that the transformer resolution for the related model will prioritize the registered transformers.
+
+Furthermore you can now use the static methods `Transformer::make` and `Transformer::canMake` to instantiate transformers for the models, using the trait is still helpful, but not required anymore.
 
 ```php
+if(Transformer::canMake(User::class); // returns true if the transformer is registered.
 $transformer = Transformer::make(User::class); // creates a transformer for the model.
 ```
 #### Relations
@@ -111,9 +132,9 @@ It is also possible to transform a model along with their related models using t
 
 The related model transformer is resolved when:
 
-* If the model implements the `Transformable` contract which is automated by the `TransformableTrait`. it also needs to define the `$transformer` property.
-
 * If the service provider is registered, then it will be resolved from the config array.
+
+* If the model implements the `Transformable` contract which is automated by the `TransformableTrait`. it also needs to define the `$transformer` property.
 
 otherwise the model will be transformed using a simple `toArray()` call.
 
@@ -187,7 +208,7 @@ To use the alternate transformation:
 $transformer->setTransformation('admin');
 ```
 
-Note that the naming convention for the transformation method is `"{transformation_name}Transformation"`.
+Note that the naming convention for the transformation method is `{transformation_name}Transformation`.
 
 any subsequent calls to `transform` method will use that transformation instead.
 
@@ -206,6 +227,11 @@ Use php unit for testing.
 phpunit
 ```
 
+## TODO
+
+* Improve the API and method names.
+* Write more todos.
+
 ## Contributing
 
 All contributes will be fully credited.
@@ -216,7 +242,7 @@ If you discover any issues, email me at logaretm1@gmail.com or use the issue tra
 
 ## Credits
 
-- Abdelrahman Awad [https://github.com/logaretm]
+- [Abdelrahman Awad](https://github.com/logaretm)
 
 ## License
 
