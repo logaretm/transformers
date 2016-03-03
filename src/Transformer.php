@@ -116,6 +116,7 @@ abstract class Transformer
      * Sets the current transformation.
      *
      * @param $transformationName
+     * @return $this
      * @throws TransformerException
      */
     public function setTransformation($transformationName)
@@ -130,6 +131,8 @@ abstract class Transformer
         }
 
         $this->transformationMethod = $methodName;
+
+        return $this;
     }
 
     /**
