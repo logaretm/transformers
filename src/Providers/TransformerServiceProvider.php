@@ -21,8 +21,8 @@ class TransformerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../Config/transformers.php' => config_path('transformers.php')
-        ], 'config');
+            __DIR__.'/../config/transformers.php' => config_path('transformers.php')
+        ]);
     }
 
     /**
