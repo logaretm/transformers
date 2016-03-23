@@ -9,11 +9,6 @@ use Logaretm\Transformers\Transformer;
 class TransformerServiceProvider extends ServiceProvider
 {
     /**
-     * @var bool
-     */
-    public $defer = true;
-
-    /**
      * Bootstrap the application services.
      *
      * @return void
@@ -22,7 +17,7 @@ class TransformerServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/transformers.php' => config_path('transformers.php')
-        ]);
+        ], 'config');
     }
 
     /**
@@ -50,15 +45,5 @@ class TransformerServiceProvider extends ServiceProvider
                 return new $transformerClass();
             });
         }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return Transformer::isConfigPublished() ? array_values(Config::get('transformers.transformers')) : [];
     }
 }
