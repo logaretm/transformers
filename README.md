@@ -106,7 +106,7 @@ You may find retrieving the transformer over and over isn't intuitive, you can u
 
 * Run this artisan command:
 
-`php artisan vendor:publish --provider="Logaretm\Transformers\Providers\TransformerServiceProvider"`
+`php artisan vendor:publish --provider="Logaretm\Transformers\Providers\TransformerServiceProvider" --tags="config"`
 
 * Head over to config/transformers.php and populate the array with your model/transformer pairs.
 
