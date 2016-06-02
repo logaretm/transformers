@@ -3,10 +3,10 @@
 namespace Logaretm\Transformers;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Logaretm\Transformers\Contracts\Transformable;
-use Illuminate\Database\Eloquent\Collection;
 use Logaretm\Transformers\Exceptions\TransformerException;
 
 abstract class Transformer
@@ -31,23 +31,19 @@ abstract class Transformer
      */
     public function transform($object)
     {
-        if($object instanceof Paginator)
-        {
+        if ($object instanceof Paginator) {
             return $this->transformCollection($object->items());
         }
 
-        if($object instanceof Collection)
-        {
+        if ($object instanceof Collection) {
             return $this->transformCollection($object);
         }
 
-        if(count($this->related))
-        {
+        if (count($this->related)) {
             return $this->transformWithRelated($object);
         }
 
-        if($this->transformationMethod)
-        {
+        if ($this->transformationMethod) {
             return $this->getAlternateTransformation($object);
         }
 
@@ -94,18 +90,15 @@ abstract class Transformer
     {
         $this->reset();
 
-        if(func_num_args() > 1)
-        {
+        if (func_num_args() > 1) {
             return $this->with(func_get_args());
         }
 
-        if(is_array($relation))
-        {
+        if (is_array($relation)) {
             $this->related = array_merge($this->related, $relation);
         }
 
-        else
-        {
+        else {
             $this->related[] = $relation;
         }
 
@@ -125,8 +118,7 @@ abstract class Transformer
         $transformationName = str_replace('Transformation', '', $transformationName);
         $methodName = $transformationName . "Transformation";
 
-        if(! method_exists($this, $methodName))
-        {
+        if (! method_exists($this, $methodName)) {
             throw new TransformerException("No such transformation as $methodName defined.");
         }
 
@@ -144,8 +136,7 @@ abstract class Transformer
     public function transformCollection($collection)
     {
         $transformedCollection = [];
-        foreach($collection as $item)
-        {
+        foreach ($collection as $item) {
             $transformedCollection[] = $this->transform($item);
         }
 
@@ -161,8 +152,7 @@ abstract class Transformer
      */
     protected function transformRelated($itemTransformation, $item)
     {
-        foreach($this->related as $relation)
-        {
+        foreach ($this->related as $relation) {
             // get direct relation name.
             $itemTransformation[explode('.', $relation, 2)[0]] = $this->getRelatedTransformation($item, $relation);
         }
@@ -190,33 +180,28 @@ abstract class Transformer
         $transformer = null;
 
         // if its a collection get the transformer object of the first item.
-        if($result instanceof Collection && count($related))
-        {
+        if ($result instanceof Collection && count($related)) {
             $result = $result[0];
         }
 
         // if its a transformable model resolve its transformer.
-        if($result instanceof Transformable)
-        {
+        if ($result instanceof Transformable) {
             $transformer = $result->getTransformer();
         }
 
         // if its registered by the service provider.
-        elseif(static::canMake(get_class($result)))
-        {
+        elseif (static::canMake(get_class($result))) {
             $transformer = static::make(get_class($result));
         }
 
         // otherwise cast it to an array.
 
-        else
-        {
+        else {
             return $related->toArray();
         }
 
         // if it has nested relations (equal to or more than 2 levels)
-        if(count($nestedRelations) == 2)
-        {
+        if (count($nestedRelations) == 2) {
             // pass the remaining nested relations to the transformer.
             $transformer->with($nestedRelations[1]);
         }
@@ -245,8 +230,7 @@ abstract class Transformer
      */
     public static function make($modelName)
     {
-        if(! static::isConfigPublished())
-        {
+        if (! static::isConfigPublished()) {
             return null;
         }
 
@@ -263,8 +247,7 @@ abstract class Transformer
      */
     public static function canMake($modelName)
     {
-        if(! static::isConfigPublished())
-        {
+        if (! static::isConfigPublished()) {
             return false;
         }
 
