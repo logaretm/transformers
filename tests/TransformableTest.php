@@ -8,7 +8,6 @@ use Logaretm\Transformers\Contracts\Transformable;
 use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Tests\Models\User;
 use Logaretm\Transformers\Tests\Models\UserTransformer;
-use Logaretm\Transformers\Transformer;
 use Logaretm\Transformers\TransformableTrait;
 
 class TransformableTest extends TestCase
@@ -20,9 +19,9 @@ class TransformableTest extends TestCase
         $user = $this->makeUsers(1);
 
         App::shouldReceive('make')
-            ->once()
-            ->with(UserTransformer::class)
-            ->andReturn(new UserTransformer);
+           ->once()
+           ->with(UserTransformer::class)
+           ->andReturn(new UserTransformer);
 
         $transformer = $user->getTransformer();
 
@@ -53,9 +52,9 @@ class TransformableTest extends TestCase
         $model = new AnotherBadModel;
 
         App::shouldReceive('make')
-            ->once()
-            ->with(User::class)
-            ->andReturn(new User());
+           ->once()
+           ->with(User::class)
+           ->andReturn(new User());
 
         // $this->setExpectedException(TransformerException::class);
         $this->expectException(TransformerException::class);
@@ -70,19 +69,19 @@ class TransformableTest extends TestCase
         $user->unsetTransformerProperty();
 
         Config::shouldReceive('has')
-            ->twice()
-            ->with('transformers.transformers')
-            ->andReturn(true);
+              ->twice()
+              ->with('transformers.transformers')
+              ->andReturn(true);
 
         Config::shouldReceive('get')
-            ->twice()
-            ->with('transformers.transformers')
-            ->andReturn([User::class => UserTransformer::class]);
+              ->twice()
+              ->with('transformers.transformers')
+              ->andReturn([User::class => UserTransformer::class]);
 
         App::shouldReceive('make')
-            ->once()
-            ->with(UserTransformer::class)
-            ->andReturn(new UserTransformer);
+           ->once()
+           ->with(UserTransformer::class)
+           ->andReturn(new UserTransformer);
 
         $this->assertInstanceOf(UserTransformer::class, $user->getTransformer());
     }
