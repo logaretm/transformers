@@ -3,7 +3,7 @@
 namespace Logaretm\Transformers;
 
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Logaretm\Transformers\Contracts\Transformable;
@@ -24,30 +24,55 @@ abstract class Transformer
     protected $related = [];
 
     /**
-     * Transforms the item object.
+     * @var int
+     */
+    protected $relatedCount = 0;
+
+    /**
+     * Transforms the object.
+     * Called recursively when transforming a collection or a relation.
      *
      * @param $object
-     * @return mixed
+     * @return array|mixed
      */
     public function transform($object)
     {
-        if ($object instanceof Paginator) {
-            return $this->transformCollection($object->items());
+        if (($collection = $this->normalize($object)) instanceof Collection) {
+            return $this->transformCollection($collection);
         }
 
-        if ($object instanceof Collection) {
-            return $this->transformCollection($object);
-        }
-
-        if (count($this->related)) {
+        // If there are relations setup, transform it along with the object.
+        if ($this->relatedCount) {
             return $this->transformWithRelated($object);
         }
 
+        // If another transformation method was requested, use that instead.
         if ($this->transformationMethod) {
             return $this->getAlternateTransformation($object);
         }
 
         return $this->getTransformation($object);
+    }
+
+    /**
+     * Normalizes the object to a collection if it is some sort of a container to multiple items.
+     *
+     * @param $object
+     * @return Collection
+     */
+    protected function normalize($object)
+    {
+        // If its a paginator instance, create a collection with its items.
+        if ($object instanceof Paginator) {
+            return collect($object->items());
+        }
+
+        // If its an array, package it in a collection.
+        elseif(is_array($object)) {
+            return collect($object);
+        }
+
+        return $object;
     }
 
     /**
@@ -58,7 +83,7 @@ abstract class Transformer
      */
     public function getAlternateTransformation($item)
     {
-        return $this->{"{$this->transformationMethod}"}($item);
+        return $this->{$this->transformationMethod}($item);
     }
 
     /**
@@ -102,6 +127,8 @@ abstract class Transformer
             $this->related[] = $relation;
         }
 
+        $this->relatedCount = count($this->related);
+
         return $this;
     }
 
@@ -130,17 +157,14 @@ abstract class Transformer
     /**
      * Transforms a collection.
      *
-     * @param $collection
+     * @param \Illuminate\Support\Collection $collection
      * @return array
      */
-    public function transformCollection($collection)
+    public function transformCollection(Collection $collection)
     {
-        $transformedCollection = [];
-        foreach ($collection as $item) {
-            $transformedCollection[] = $this->transform($item);
-        }
+        // Use collection's built in map method (glorified map).
 
-        return $transformedCollection;
+        return $collection->map([$this, 'transform'])->all();
     }
 
     /**
@@ -154,7 +178,8 @@ abstract class Transformer
     {
         foreach ($this->related as $relation) {
             // get direct relation name.
-            $itemTransformation[explode('.', $relation, 2)[0]] = $this->getRelatedTransformation($item, $relation);
+            $relationName = explode('.', $relation, 2)[0];
+            $itemTransformation[$relationName] = $this->getRelatedTransformation($item, $relation);
         }
 
         return $itemTransformation;
@@ -179,34 +204,46 @@ abstract class Transformer
 
         $transformer = null;
 
-        // if its a collection get the transformer object of the first item.
+        // if its a collection switch the object to the first item.
         if ($result instanceof Collection && count($related)) {
             $result = $result[0];
         }
 
-        // if its a transformable model resolve its transformer.
-        if ($result instanceof Transformable) {
-            $transformer = $result->getTransformer();
-        }
+        $transformer = $this->resolveTransformer($result);
 
-        // if its registered by the service provider.
-        elseif (static::canMake(get_class($result))) {
-            $transformer = static::make(get_class($result));
-        }
-
-        // otherwise cast it to an array.
-
-        else {
-            return $related->toArray();
+        // If no transformer was resolved.
+        if (! $transformer) {
+            $related->toArray();
         }
 
         // if it has nested relations (equal to or more than 2 levels)
         if (count($nestedRelations) == 2) {
-            // pass the remaining nested relations to the transformer.
+            // configure the remaining nested relations to the transformer.
             $transformer->with($nestedRelations[1]);
         }
 
         return $transformer->transform($related);
+    }
+
+    /**
+     * @param $model
+     * @return Transformer|null
+     */
+    protected function resolveTransformer($model)
+    {
+        // if its a transformable model resolve its transformer.
+        if ($model instanceof Transformable) {
+            return $model->getTransformer();
+        }
+
+        $className = get_class($model);
+
+        // if its registered by the service provider.
+        if (static::canMake($className)) {
+            return static::make($className);
+        }
+
+        return null;
     }
 
     /**
@@ -217,6 +254,7 @@ abstract class Transformer
     public function reset()
     {
         $this->related = [];
+        $this->relatedCount = 0;
         $this->transformationMethod = null;
 
         return $this;
