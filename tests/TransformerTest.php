@@ -22,6 +22,20 @@ class TransformerTest extends TestCase
             'memberSince' => $user->created_at->timestamp
         ], $transformer->transform($user));
     }
+    
+    /** @test */
+    function it_transforms_an_array_of_models()
+    {
+        $users = $this->makeUsers(3, true);
+        $user = $users[0];
+        $transformer = new UserTransformer();
+
+        $this->assertEquals([
+            'name' => $user->name,
+            'email' => $user->email,
+            'memberSince' => $user->created_at->timestamp
+        ], $transformer->transform($users)[0]);
+    }
 
     /** @test */
     function it_transformers_a_collection_of_the_model()
@@ -86,16 +100,6 @@ class TransformerTest extends TestCase
     }
 
     /** @test */
-    function it_throws_an_exception_if_a_requested_transformation_does_not_exist()
-    {
-        $this->makeUsers(1, true);
-        $transformer = new UserTransformer();
-
-        $this->expectException(TransformerException::class);
-        $transformer->setTransformation('public');
-    }
-
-    /** @test */
     function it_uses_multiple_transformations()
     {
         $user = $this->makeUsers(1, true);
@@ -105,5 +109,15 @@ class TransformerTest extends TestCase
         $transformer->setTransformation('admin');
 
         $this->assertArrayHasKey('isAdmin', $transformer->transform($user));
+    }
+
+    /** @test */
+    function it_throws_an_exception_if_a_requested_transformation_does_not_exist()
+    {
+        $this->makeUsers(1, true);
+        $transformer = new UserTransformer();
+
+        $this->expectException(TransformerException::class);
+        $transformer->setTransformation('public');
     }
 }
