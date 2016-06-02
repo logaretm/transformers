@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Database\Schema\Blueprint;
 use Logaretm\Transformers\Tests\Models\Post;
 use Logaretm\Transformers\Tests\Models\Tag;
 use Logaretm\Transformers\Tests\Models\User;
@@ -31,16 +31,14 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      */
     protected function migrateTables()
     {
-        DB::schema()->create('users', function (Blueprint $table)
-        {
+        DB::schema()->create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('email');
             $table->timestamps();
         });
 
-        DB::schema()->create('posts', function (Blueprint $table)
-        {
+        DB::schema()->create('posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
             $table->text('body');
@@ -48,21 +46,18 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
             $table->timestamps();
         });
 
-        DB::schema()->create('tags', function (Blueprint $table)
-        {
+        DB::schema()->create('tags', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
 
-        DB::schema()->create('post_tag', function (Blueprint $table)
-        {
+        DB::schema()->create('post_tag', function (Blueprint $table) {
             $table->unsignedInteger('tag_id')->index();
             $table->unsignedInteger('post_id')->index();
         });
 
-        DB::schema()->create('categories', function (Blueprint $table)
-        {
+        DB::schema()->create('categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
             $table->text('description')->nullable();
@@ -80,14 +75,12 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         $faker = Faker\Factory::create();
         $users = [];
 
-        for($i = 0; $i < $count; $i++)
-        {
+        for ($i = 0; $i < $count; $i++) {
             $user = new User;
             $user->name = $faker->name;
             $user->email = $faker->email;
 
-            if($save)
-            {
+            if ($save) {
                 $user->save();
             }
 
@@ -103,11 +96,10 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      */
     protected function makeTags($count = 10)
     {
-       $faker = Faker\Factory::create();
+        $faker = Faker\Factory::create();
 
         $tagIds = [];
-        foreach(range(1, $count, 1) as $value)
-        {
+        foreach (range(1, $count, 1) as $value) {
             $tag = new Tag();
             $tag->name = $faker->word;
             $tag->save();
@@ -128,14 +120,12 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         $faker = Faker\Factory::create();
         $posts = [];
 
-        for($i = 0; $i < $count; $i++)
-        {
+        for ($i = 0; $i < $count; $i++) {
             $post = new Post();
             $post->title = $faker->title;
             $post->body = $faker->sentence;
 
-            if($save)
-            {
+            if ($save) {
                 $post->save();
             }
 
@@ -153,8 +143,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         $user = $this->makeUsers(1, true);
         $posts = $user->posts()->saveMany($this->makePosts(3, false));
 
-        foreach($posts as $post)
-        {
+        foreach ($posts as $post) {
             $post->tags()->attach($this->makeTags(4));
         }
 
