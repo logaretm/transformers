@@ -1,4 +1,5 @@
 # Transformers
+[![Build Status](https://travis-ci.org/logaretm/transformers.svg?branch=master)](https://travis-ci.org/logaretm/transformers)
 
 This a package that provides transformer (reducer/serializer) classes and traits for the Laravel eloquent models.
 
