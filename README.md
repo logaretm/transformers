@@ -231,6 +231,7 @@ phpunit
 ## TODO
 
 * Improve the API and method names.
+* Maybe a console command to generate a transformer for a model.
 * Write more todos.
 
 ## Contributing
