@@ -232,6 +232,7 @@ phpunit
 
 * Improve the API and method names.
 * Maybe a console command to generate a transformer for a model.
+* Use closures to override transformation (one shot).
 * Write more todos.
 
 ## Contributing
