@@ -158,7 +158,7 @@ abstract class Transformer
      */
     public function transformCollection(Collection $collection)
     {
-        // Use collection's built in map method (glorified map).
+        // Use collection's built in map method.
 
         return $collection->map([$this, 'transform'])->all();
     }
