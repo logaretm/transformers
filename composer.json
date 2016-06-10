@@ -9,9 +9,9 @@
             "email": "logaretm1@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "illuminate/support": "^5.2"
+        "illuminate/support": "^5.2",
+        "illuminate/console": "^5.2"
     },
     "autoload": {
         "psr-4": {

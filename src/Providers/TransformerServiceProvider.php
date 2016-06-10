@@ -4,6 +4,7 @@ namespace Logaretm\Transformers\Providers;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Logaretm\Transformers\Commands\MakeTransformerCommand;
 use Logaretm\Transformers\Transformer;
 
 class TransformerServiceProvider extends ServiceProvider
@@ -18,6 +19,10 @@ class TransformerServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/transformers.php' => config_path('transformers.php')
         ], 'config');
+
+        $this->commands([
+            MakeTransformerCommand::class
+        ]);
     }
 
     /**
