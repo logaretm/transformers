@@ -14,6 +14,11 @@ class MakeTransformerCommand extends GeneratorCommand
     /**
      * @var string
      */
+    protected $type = "Transformer";
+
+    /**
+     * @var string
+     */
     protected $description = "Generates a transformer class boilerplate";
 
     /**
