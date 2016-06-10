@@ -209,6 +209,18 @@ To use the alternate transformation:
 $transformer->setTransformation('admin');
 ```
 
+or you can pass a closure as an alternate transformation method.
+```php
+$transformer->setTransformation(function ($user) {
+    return [
+        'name' => $user->name,
+        'email' => $user->email,
+        'memberSince' => $user->created_at->timestamp,
+        'isAdmin' => $user->isAdmin()
+    ];
+});
+```
+
 Note that the naming convention for the transformation method is `{transformation_name}Transformation`.
 
 any subsequent calls to `transform` method will use that transformation instead.
