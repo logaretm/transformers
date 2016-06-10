@@ -12,7 +12,7 @@ use Logaretm\Transformers\Exceptions\TransformerException;
 abstract class Transformer
 {
     /**
-     * @var string
+     * @var \Closure
      */
     protected $transformationMethod = null;
 
@@ -47,7 +47,7 @@ abstract class Transformer
         }
 
         // If another transformation method was requested, use that instead.
-        if ($this->transformationMethod) {
+        if (is_callable($this->transformationMethod)) {
             return $this->getAlternateTransformation($object);
         }
 
@@ -81,7 +81,7 @@ abstract class Transformer
      */
     public function getAlternateTransformation($item)
     {
-        return $this->{$this->transformationMethod}($item);
+        return call_user_func($this->transformationMethod, $item);
     }
 
     /**
@@ -131,21 +131,26 @@ abstract class Transformer
     /**
      * Sets the current transformation.
      *
-     * @param $transformationName
+     * @param $transformation
      * @return $this
      * @throws TransformerException
      */
-    public function setTransformation($transformationName)
+    public function setTransformation($transformation)
     {
-        // just to avoid wrongly passing the name suffixed with "Transformation".
-        $transformationName = str_replace('Transformation', '', $transformationName);
-        $methodName = $transformationName . "Transformation";
+        if (is_callable($transformation)) {
+            $this->transformationMethod = $transformation;
+            
+            return $this;
+        }
+        
+        // replace just to avoid wrongly passing the name containing "Transformation".
+        $methodName = str_replace('Transformation', '', $transformation) . "Transformation";
 
         if (! method_exists($this, $methodName)) {
             throw new TransformerException("No such transformation as $methodName defined.");
         }
 
-        $this->transformationMethod = $methodName;
+        $this->transformationMethod = [$this, $methodName];
 
         return $this;
     }

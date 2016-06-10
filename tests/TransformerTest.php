@@ -112,6 +112,22 @@ class TransformerTest extends TestCase
     }
 
     /** @test */
+    function it_allows_a_closure_as_an_alternate_transformation_method()
+    {
+        $user = $this->makeUsers(1, true);
+        $transformer = new UserTransformer();
+
+        $transformer->setTransformation(function ($user) {
+            return [
+                'name' => $user->name,
+                'isAdmin' => true,
+            ];
+        });
+
+        $this->assertEquals(['name' => $user->name, 'isAdmin' => true], $transformer->transform($user));
+    }
+
+    /** @test */
     function it_throws_an_exception_if_a_requested_transformation_does_not_exist()
     {
         $this->makeUsers(1, true);
