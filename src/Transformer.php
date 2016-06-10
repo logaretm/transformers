@@ -65,10 +65,8 @@ abstract class Transformer
         // If its a paginator instance, create a collection with its items.
         if ($object instanceof Paginator) {
             return collect($object->items());
-        }
-
-        // If its an array, package it in a collection.
-        elseif(is_array($object)) {
+        } elseif (is_array($object)) {
+            // If its an array, package it in a collection.
             return collect($object);
         }
 
@@ -90,7 +88,7 @@ abstract class Transformer
      * @param $item
      * @return mixed
      */
-    public abstract function getTransformation($item);
+    abstract public function getTransformation($item);
 
     /**
      * Transforms the item with its related models.
@@ -121,9 +119,7 @@ abstract class Transformer
 
         if (is_array($relation)) {
             $this->related = array_merge($this->related, $relation);
-        }
-
-        else {
+        } else {
             $this->related[] = $relation;
         }
 
@@ -253,8 +249,30 @@ abstract class Transformer
      */
     public function reset()
     {
+        return $this->resetRelations()
+                    ->resetTransformation();
+    }
+
+    /**
+     * Resets the relations.
+     *
+     * @return $this
+     */
+    public function resetRelations()
+    {
         $this->related = [];
         $this->relatedCount = 0;
+
+        return $this;
+    }
+
+    /**
+     * Resets the transformation method to the default one.
+     *
+     * @return $this
+     */
+    public function resetTransformation()
+    {
         $this->transformationMethod = null;
 
         return $this;
