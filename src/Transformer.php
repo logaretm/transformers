@@ -228,15 +228,15 @@ abstract class Transformer
     protected function resolveTransformer($model)
     {
         // if its a transformable model resolve its transformer.
-        if ($model instanceof Transformable) {
-            return $model->getTransformer();
-        }
-
         $className = get_class($model);
 
         // if its registered by the service provider.
         if (static::canMake($className)) {
             return static::make($className);
+        }
+
+        if ($model instanceof Transformable) {
+            return $model->getTransformer();
         }
 
         return null;
