@@ -221,6 +221,14 @@ to reset the transformation method use the `reset` method.
 $transformer->reset(); //resets the transformation method and the related models.
 ```
 
+#### Generating Transformers
+You can easily generate a transformer class using this artisan command:
+```bash
+php artisan make:transformer {transformer name}
+```
+
+which will create a basic transformer class in `app/Transformers` directory, don't forget to put your transformations there.
+
 ## Testing
 
 Use php unit for testing.
@@ -231,7 +239,7 @@ phpunit
 ## TODO
 
 * Improve the API and method names.
-* Maybe a console command to generate a transformer for a model.
+* ~~Maybe a console command to generate a transformer for a model.~~
 * Use closures to override transformation (one shot).
 * Write more todos.
 
