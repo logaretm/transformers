@@ -153,7 +153,7 @@ $users = User::with('posts.tags')->get();
 $data = $transformer->with('posts.tags')->transform($users);
 ```
 
-you can reset the transformer using `$transformer->reset()` which will remove the related models from the transformation. also note that any call to `with` will reset the transformer automatically.
+you can reset the transformer relations using `$transformer->resetRelations()` which will remove the related models from the transformation. also note that any call to `with` will reset the transformer automatically.
 
 aside from collections you can transform a paginator, or a single object.
 
@@ -215,10 +215,16 @@ any subsequent calls to `transform` method will use that transformation instead.
 
 Note that it will throw a TransformerException if the requested transformation does not exist.
 
-to reset the transformation method use the `reset` method.
+to reset the transformation method use the `resetTransformation` method.
 
 ```php
-$transformer->reset(); //resets the transformation method and the related models.
+$transformer->resetTransformation(); //resets the transformation method.
+```
+
+or if you want to reset both relations and transformation method:
+
+```php
+$transformer->reset(); //resets the transformation method and the relations.
 ```
 
 #### Generating Transformers
@@ -240,7 +246,7 @@ phpunit
 
 * Improve the API and method names.
 * ~~Maybe a console command to generate a transformer for a model.~~
-* Use closures to override transformation (one shot).
+* ~~Use closures to override transformation.~~
 * Write more todos.
 
 ## Contributing
