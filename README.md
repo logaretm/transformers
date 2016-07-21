@@ -1,4 +1,5 @@
 # Transformers
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ddca1557a00545d48c62f1c5c616c984)](https://www.codacy.com/app/logaretm1/transformers?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=logaretm/transformers&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/logaretm/transformers.svg?branch=master)](https://travis-ci.org/logaretm/transformers)
 
 This a package that provides transformer (reducer/serializer) classes and traits for the Laravel eloquent models.
