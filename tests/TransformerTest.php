@@ -5,6 +5,7 @@ use Logaretm\Transformers\Exceptions\TransformerException;
 use Logaretm\Transformers\Tests\Models\PostTransformer;
 use Logaretm\Transformers\Tests\Models\TagTransformer;
 use Logaretm\Transformers\Tests\Models\User;
+use Logaretm\Transformers\Tests\Models\Post;
 use Logaretm\Transformers\Tests\Models\UserTransformer;
 
 class TransformerTest extends TestCase
@@ -22,7 +23,7 @@ class TransformerTest extends TestCase
             'memberSince' => $user->created_at->timestamp
         ], $transformer->transform($user));
     }
-    
+
     /** @test */
     function it_transforms_an_array_of_models()
     {
@@ -135,5 +136,25 @@ class TransformerTest extends TestCase
 
         $this->expectException(TransformerException::class);
         $transformer->setTransformation('public');
+    }
+
+    /** @test */
+    function it_returns_empty_array_if_the_related_has_empty_collection()
+    {
+        $this->makeUserWithPosts();
+        $post = Post::first();
+        $post->user_id = 0;
+        $post->save();
+        $transformer = new PostTransformer();
+        $transformed = $transformer->with('author')->transform($post);
+        $this->assertEquals($transformed['author'], null);
+
+        $user = User::first();
+        $user->posts()->delete();
+        $transformer = new UserTransformer();
+
+        $transformed = $transformer->with('posts.tags')->transform($user);
+
+        $this->assertEquals($transformed['posts'], []);
     }
 }

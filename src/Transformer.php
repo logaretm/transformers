@@ -139,10 +139,10 @@ abstract class Transformer
     {
         if (is_callable($transformation)) {
             $this->transformationMethod = $transformation;
-            
+
             return $this;
         }
-        
+
         // replace just to avoid wrongly passing the name containing "Transformation".
         $methodName = str_replace('Transformation', '', $transformation) . "Transformation";
 
@@ -205,9 +205,17 @@ abstract class Transformer
 
         $transformer = null;
 
+        if (! is_object($related)) {
+            return $related;
+        }
+
         // if its a collection switch the object to the first item.
-        if ($result instanceof Collection && count($related)) {
-            $result = $result[0];
+        if ($related instanceof Collection) {
+            if ($related->count()) {
+                $result = $result[0];
+            } else {
+                return [];
+            }
         }
 
         $transformer = $this->resolveTransformer($result);
