@@ -157,4 +157,15 @@ class TransformerTest extends TestCase
 
         $this->assertEquals($transformed['posts'], []);
     }
+
+    /** @test */
+    function it_also_includes_getters_in_the_transformation()
+    {
+        $this->makeUserWithPosts();
+        $user = User::first();
+        $transformer = new UserTransformer();
+        $transformed = $transformer->with('isOfAge')->transform($user);
+
+        $this->assertTrue($transformed['isOfAge']);
+    }
 }

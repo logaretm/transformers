@@ -59,4 +59,13 @@ class User extends Model implements Transformable
     {
        unset($this->transformer);
     }
+
+    /**
+     * [getIsOfAgeAttribute description]
+     * @return [type] [description]
+     */
+    public function getIsOfAgeAttribute()
+    {
+        return true;
+    }
 }
