@@ -222,7 +222,7 @@ abstract class Transformer
 
         // If no transformer was resolved.
         if (! $transformer) {
-            $related->toArray();
+            return $related->toArray();
         }
 
         // if it has nested relations (equal to or more than 2 levels)
